@@ -43,7 +43,7 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 
 				var trueValue = true;
 				var falseValue = false;
-				var indeterminateValue = undefined;
+				var indeterminateValue = "-";
 
 				// If defined set true value
 				if(attrs.ngTrueValue !== undefined) {
