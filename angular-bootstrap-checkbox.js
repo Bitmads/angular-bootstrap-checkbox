@@ -7,7 +7,7 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 		restrict: "E",
 		replace: "true",
 		template: "<button type=\"button\" ng-style=\"stylebtn\" class=\"btn btn-default\" ng-class=\"{'btn-xs': size==='default', 'btn-sm': size==='large', 'btn-lg': size==='largest', 'checked': checked===true}\">" +
-			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined}\"></span>" +
+			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined, 'glyphicon-menu-up': checked==='^'}\"></span>" +
 			"</button>",
 		compile: function compile(elem, attrs, transclude) {
 			if(attrs.ngClass !== undefined) {
@@ -40,10 +40,15 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 				if(attrs.indeterminate === "true") {
 					indeterminate = true;
 				}
+				var skipped = false;
+				if (attrs.skipped === "true") {
+				    skipped = true;
+				}
 
 				var trueValue = true;
 				var falseValue = false;
 				var indeterminateValue = "-";
+				var skippedValue = "^";
 
 				// If defined set true value
 				if(attrs.ngTrueValue !== undefined) {
@@ -57,17 +62,28 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 				if(attrs.ngIndeterminateValue !== undefined) {
 					indeterminateValue = attrs.ngIndeterminateValue;
 				}
+			    // If defined set skipped value
+				if (attrs.ngSkippedValue !== undefined) {
+				    skippedValue = attrs.ngSkippedValue;
+				}
 
 				// Check if name attribute is set and if so add it to the DOM element
 				if(scope.name !== undefined) {
 					elem.name = scope.name;
 				}
 
+			    //Kelvin Custom Code
+				if (scope.ariaLabel !== undefined) {
+				    elem.ariaLabel = scope.ariaLabel;
+				}
+
 				// Update element when model changes
 				scope.$watch(function() {
 					if(modelCtrl.$modelValue === trueValue || modelCtrl.$modelValue === true) {
 						modelCtrl.$setViewValue(trueValue);
-					} else if(indeterminate === true && (modelCtrl.$modelValue === indeterminateValue || modelCtrl.$modelValue === undefined)) {
+					} else if (skipped === true && (modelCtrl.$modelValue === skippedValue || modelCtrl.$modelValue === undefined)) {
+					    modelCtrl.$setViewValue(skippedValue);
+					} else if (indeterminate === true && (modelCtrl.$modelValue === indeterminateValue || modelCtrl.$modelValue === undefined)) {
 						modelCtrl.$setViewValue(indeterminateValue);
 					} else {
 						modelCtrl.$setViewValue(falseValue);
@@ -76,12 +92,14 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 				}, function(newVal, oldVal) {
 					if(indeterminate === true && modelCtrl.$modelValue === indeterminateValue) {
 						scope.checked = undefined;
+					} else if (skipped === true && modelCtrl.$modelValue === skippedValue) {
+					    scope.checked = skippedValue;
 					} else {
-						scope.checked = modelCtrl.$modelValue === trueValue;
+					    scope.checked = modelCtrl.$modelValue === trueValue;
 					}
 				}, true);
 
-				// On click swap value and trigger onChange function
+				// On click swap value and trigger onChange function, does not include skip
 				elem.bind("click", function() {
 					scope.$apply(function() {
 						if(indeterminate === true) {
