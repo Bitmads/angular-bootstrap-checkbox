@@ -7,7 +7,7 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 		restrict: "E",
 		replace: "true",
 		template: "<button type=\"button\" ng-style=\"stylebtn\" class=\"btn btn-default\" ng-class=\"{'btn-xs': size==='default', 'btn-sm': size==='large', 'btn-lg': size==='largest', 'checked': checked===true}\">" +
-			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined, 'glyphicon-menu-up': checked==='^'}\"></span>" +
+			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined, 'glyphicon-menu-up': checked==='^'}\" aria-label=\"{'checkbox checked': checked===true, 'checkbox unchecked': checked===false, 'checkbox indeterminate': checked===undefined, 'checkbox value skipped': checked==='^'}\"></span>" +
 			"</button>",
 		compile: function compile(elem, attrs, transclude) {
 			if(attrs.ngClass !== undefined) {
