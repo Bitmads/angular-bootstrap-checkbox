@@ -6,8 +6,8 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 		require: "ngModel",
 		restrict: "E",
 		replace: "true",
-		template: "<button type=\"button\" ng-style=\"stylebtn\" class=\"btn btn-default\" ng-class=\"{'btn-xs': size==='default', 'btn-sm': size==='large', 'btn-lg': size==='largest', 'checked': checked===true}\">" +
-			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined, 'glyphicon-menu-up': checked==='^'}\" aria-label=\"{'checkbox checked': checked===true, 'checkbox unchecked': checked===false, 'checkbox indeterminate': checked===undefined, 'checkbox value skipped': checked==='^'}\"></span>" +
+		template: "<button type=\"button\" role=\"checkbox\" ng-style=\"stylebtn\" class=\"btn btn-default\" ng-class=\"{'btn-xs': size==='default', 'btn-sm': size==='large', 'btn-lg': size==='largest', 'checked': checked===true}\"  >" +
+			"<span ng-style=\"styleicon\" class=\"glyphicon\" ng-class=\"{'glyphicon-ok': checked===true, 'glyphicon-minus': checked===undefined, 'glyphicon-menu-up': checked==='^'}\" ></span>" +
 			"</button>",
 		compile: function compile(elem, attrs, transclude) {
 			if(attrs.ngClass !== undefined) {
@@ -90,12 +90,26 @@ angular.module("ui.checkbox", []).directive("checkbox", function() {
 					}
 					return modelCtrl.$modelValue;
 				}, function(newVal, oldVal) {
-					if(indeterminate === true && modelCtrl.$modelValue === indeterminateValue) {
+				    if (indeterminate === true && modelCtrl.$modelValue === indeterminateValue) {
+				        elem.attr("aria-label","checkbox indeterminate");
+				        elem.attr("aria-checked", false);
+				        elem.attr("checked", false);
 						scope.checked = undefined;
-					} else if (skipped === true && modelCtrl.$modelValue === skippedValue) {
+				    } else if (skipped === true && modelCtrl.$modelValue === skippedValue) {
+				        elem.attr("aria-label", "checkbox skipped value");
+				        elem.attr("aria-checked", false);
+				        elem.attr("checked", false);
 					    scope.checked = skippedValue;
 					} else {
-					    scope.checked = modelCtrl.$modelValue === trueValue;
+				        scope.checked = modelCtrl.$modelValue === trueValue;
+				        if (scope.checked) {
+				            elem.attr("aria-checked", true);
+				            elem.attr("checked", true);
+				        }
+				        else {
+				            elem.attr("aria-checked", false);
+				            elem.attr("checked", false);
+				        }
 					}
 				}, true);
 
